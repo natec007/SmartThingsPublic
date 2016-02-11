@@ -21,7 +21,7 @@
  */
 
 metadata {
-	definition (name: "Spruce Controller", namespace: "Plaidsystems", author: "NCauffman") {
+	definition (name: "Spruce Controller", namespace: "plaidsystems", author: "NCauffman") {
 		capability "Switch"
         capability "Configuration"
         capability "Refresh"
@@ -96,7 +96,7 @@ metadata {
         command "notify"
         command "updated"
 
-		fingerprint endpointId: "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18", profileId: "0104", deviceId: "0002", deviceVersion: "00", inClusters: "0000,0003,0004,0005,0006,000F", outClusters: "0003, 0019"
+		fingerprint endpointId: "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18", profileId: "0104", deviceId: "0002", deviceVersion: "00", inClusters: "0000,0003,0004,0005,0006,000F", outClusters: "0003, 0019", manufacturer: "PLAID SYSTEMS", model: "PS-SPRZ16-01"
 		
 	}
 
@@ -108,7 +108,7 @@ metadata {
 		
 	}
     preferences {
-    input description: "Spruce Controller version: V3\nPress Configure button after making changes to these preferences", displayDuringSetup: true, type: "paragraph", element: "paragraph"  
+    input description: "Press Configure button after making changes to these preferences", displayDuringSetup: true, type: "paragraph", element: "paragraph", title: ""
     input "RainEnable", "bool", title: "Rain Sensor Attached?", required: false, displayDuringSetup: true
     input "ManualTime", "number", title: "Automatic shutoff time when a zone is turned on manually?", required: false, displayDuringSetup: true
 	}
@@ -147,8 +147,8 @@ metadata {
             state "z1on", label: '1', action: "z1off", icon: "st.valves.water.open", backgroundColor: "#46c2e8"
 		}
         standardTile("switch2", "device.switch2") {            
-            state "z2off", label: '2', action: "z2on", icon: "st.valves.water.closed", backgroundColor: "#ffffff", nextState: "z2on"
-            state "z2on", label: '2', action: "z2off", icon: "st.valves.water.open", backgroundColor: "#46c2e8", nextState: "z2off"
+            state "z2off", label: '2', action: "z2on", icon: "st.valves.water.closed", backgroundColor: "#ffffff"
+            state "z2on", label: '2', action: "z2off", icon: "st.valves.water.open", backgroundColor: "#46c2e8"
 		}        
         standardTile("switch3", "device.switch3", inactiveLabel: false) {			
 			state "z3off", label: '3', action: "z3on", icon: "st.valves.water.closed", backgroundColor: "#ffffff"
@@ -159,8 +159,8 @@ metadata {
             state "z4on", label: '4', action: "z4off", icon: "st.valves.water.open", backgroundColor: "#46c2e8"
 		}
         standardTile("switch5", "device.switch5", inactiveLabel: false) {            
-            state "z5off", label: '5', action: "z5on", icon: "st.valves.water.closed", backgroundColor: "#ffffff", nextState: "z5on"
-            state "z5on", label: '5', action: "z5off", icon: "st.valves.water.open", backgroundColor: "#46c2e8", nextState: "z5off"
+            state "z5off", label: '5', action: "z5on", icon: "st.valves.water.closed", backgroundColor: "#ffffff"
+            state "z5on", label: '5', action: "z5off", icon: "st.valves.water.open", backgroundColor: "#46c2e8"
 		}
 		standardTile("switch6", "device.switch6", inactiveLabel: false) {            
             state "z6off", label: '6', action: "z6on", icon: "st.valves.water.closed", backgroundColor: "#ffffff"
@@ -179,8 +179,8 @@ metadata {
             state "z9on", label: '9', action: "z9off", icon: "st.valves.water.open", backgroundColor: "#46c2e8"
 		}
         standardTile("switch10", "device.switch10", inactiveLabel: false) {            
-            state "z10off", label: '10', action: "z10on", icon: "st.valves.water.closed", backgroundColor: "#ffffff", nextState: "z2on"
-            state "z10on", label: '10', action: "z10off", icon: "st.valves.water.open", backgroundColor: "#46c2e8", nextState: "z2off"
+            state "z10off", label: '10', action: "z10on", icon: "st.valves.water.closed", backgroundColor: "#ffffff"
+            state "z10on", label: '10', action: "z10off", icon: "st.valves.water.open", backgroundColor: "#46c2e8"
 		}        
         standardTile("switch11", "device.switch11", inactiveLabel: false) {			
 			state "z11off", label: '11', action: "z11on", icon: "st.valves.water.closed", backgroundColor: "#ffffff"
@@ -191,8 +191,8 @@ metadata {
             state "z12on", label: '12', action: "z12off", icon: "st.valves.water.open", backgroundColor: "#46c2e8"
 		}
         standardTile("switch13", "device.switch13", inactiveLabel: false) {            
-            state "z13off", label: '13', action: "z13on", icon: "st.valves.water.closed", backgroundColor: "#ffffff", nextState: "z5on"
-            state "z13on", label: '13', action: "z13off", icon: "st.valves.water.open", backgroundColor: "#46c2e8", nextState: "z5off"
+            state "z13off", label: '13', action: "z13on", icon: "st.valves.water.closed", backgroundColor: "#ffffff"
+            state "z13on", label: '13', action: "z13off", icon: "st.valves.water.open", backgroundColor: "#46c2e8"
 		}
 		standardTile("switch14", "device.switch14", inactiveLabel: false) {            
             state "z14off", label: '14', action: "z14on", icon: "st.valves.water.closed", backgroundColor: "#ffffff"
@@ -327,7 +327,7 @@ def manual(){
 	log.debug "Time $ManualTime"
     def mTime = 10
     if (ManualTime) mTime = ManualTime
-    def manualTime = hex(ManualTime)
+    def manualTime = hex(mTime)
     "st wattr 0x${device.deviceNetworkId} 1 6 0x4002 0x21 {00${manualTime}}"
     
     }
@@ -372,7 +372,30 @@ def configure() {
 	sendEvent(name: 'configuration',value: 100, descriptionText: "Configuration initialized")
     
     def configCmds = [	
-  
+        //program on/off
+        "zdo bind 0x${device.deviceNetworkId} 1 1 6 {${device.zigbeeId}} {}", "delay 1000",
+        "zdo bind 0x${device.deviceNetworkId} 1 1 0x09 {${device.zigbeeId}} {}", "delay 1000",        
+        "zdo bind 0x${device.deviceNetworkId} 1 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
+        //zones 1-8
+        "zdo bind 0x${device.deviceNetworkId} 2 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
+        "zdo bind 0x${device.deviceNetworkId} 3 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
+		"zdo bind 0x${device.deviceNetworkId} 4 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
+        "zdo bind 0x${device.deviceNetworkId} 5 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
+        "zdo bind 0x${device.deviceNetworkId} 6 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
+        "zdo bind 0x${device.deviceNetworkId} 7 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
+        "zdo bind 0x${device.deviceNetworkId} 8 1 0x0F {${device.zigbeeId}} {}", "delay 1000",        
+        "zdo bind 0x${device.deviceNetworkId} 9 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
+        //zones 9-16
+        "zdo bind 0x${device.deviceNetworkId} 10 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
+        "zdo bind 0x${device.deviceNetworkId} 11 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
+		"zdo bind 0x${device.deviceNetworkId} 12 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
+        "zdo bind 0x${device.deviceNetworkId} 13 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
+        "zdo bind 0x${device.deviceNetworkId} 14 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
+        "zdo bind 0x${device.deviceNetworkId} 15 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
+        "zdo bind 0x${device.deviceNetworkId} 16 1 0x0F {${device.zigbeeId}} {}", "delay 1000",        
+        "zdo bind 0x${device.deviceNetworkId} 17 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
+        //rain sensor
+        "zdo bind 0x${device.deviceNetworkId} 18 1 0x0F {${device.zigbeeId}} {}",
         
         "zcl global send-me-a-report 6 0 0x10 1 0 {01}", "delay 500",
         "send 0x${device.deviceNetworkId} 1 1", "delay 500",
@@ -433,33 +456,7 @@ def configure() {
         "send 0x${device.deviceNetworkId} 1 18", "delay 500",
         
         "zcl global send-me-a-report 0x09 0x00 0x21 1 0 {00}", "delay 500",
-        "send 0x${device.deviceNetworkId} 1 1", "delay 500",
-        
-        
-        //program on/off
-        "zdo bind 0x${device.deviceNetworkId} 1 1 6 {${device.zigbeeId}} {}", "delay 1000",
-        "zdo bind 0x${device.deviceNetworkId} 1 1 0x09 {${device.zigbeeId}} {}", "delay 1000",        
-        "zdo bind 0x${device.deviceNetworkId} 1 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
-        //zones 1-8
-        "zdo bind 0x${device.deviceNetworkId} 2 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
-        "zdo bind 0x${device.deviceNetworkId} 3 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
-		"zdo bind 0x${device.deviceNetworkId} 4 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
-        "zdo bind 0x${device.deviceNetworkId} 5 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
-        "zdo bind 0x${device.deviceNetworkId} 6 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
-        "zdo bind 0x${device.deviceNetworkId} 7 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
-        "zdo bind 0x${device.deviceNetworkId} 8 1 0x0F {${device.zigbeeId}} {}", "delay 1000",        
-        "zdo bind 0x${device.deviceNetworkId} 9 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
-        //zones 9-16
-        "zdo bind 0x${device.deviceNetworkId} 10 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
-        "zdo bind 0x${device.deviceNetworkId} 11 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
-		"zdo bind 0x${device.deviceNetworkId} 12 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
-        "zdo bind 0x${device.deviceNetworkId} 13 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
-        "zdo bind 0x${device.deviceNetworkId} 14 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
-        "zdo bind 0x${device.deviceNetworkId} 15 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
-        "zdo bind 0x${device.deviceNetworkId} 16 1 0x0F {${device.zigbeeId}} {}", "delay 1000",        
-        "zdo bind 0x${device.deviceNetworkId} 17 1 0x0F {${device.zigbeeId}} {}", "delay 1000",
-        //rain sensor
-        "zdo bind 0x${device.deviceNetworkId} 18 1 0x0F {${device.zigbeeId}} {}"
+        "send 0x${device.deviceNetworkId} 1 1", "delay 500"
 	]
     return configCmds + rain() + manual()
 }

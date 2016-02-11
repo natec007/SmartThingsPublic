@@ -17,7 +17,7 @@
  -remove polling and/or refresh(?)
  */
 metadata {
-	definition (name: "Spruce Sensor V1", namespace: "PlaidSystems", author: "NCauffman") {
+	definition (name: "Spruce Sensor", namespace: "plaidsystems", author: "NCauffman") {
 		
 		capability "Configuration"
 		capability "Battery"
@@ -32,11 +32,11 @@ metadata {
         command "resetHumidity"
         command "refresh"
         
-        fingerprint profileId: "0104", inClusters: "0000,0001,0003,0402,0405", outClusters: "0003, 0019"        
+        fingerprint profileId: "0104", inClusters: "0000,0001,0003,0402,0405", outClusters: "0003, 0019", manufacturer: "PLAID SYSTEMS", model: "PS-SPRZMS-01"
 	}
 
 	preferences {
-		input description: "Spruce Sensor V2\nThis feature allows you to correct any temperature variations by selecting an offset. Ex: If your sensor consistently reports a temp that's 5 degrees too warm, you'd enter \"-5\". If 3 degrees too cold, enter \"+3\".", displayDuringSetup: false, type: "paragraph", element: "paragraph"
+		input description: "This feature allows you to correct any temperature variations by selecting an offset. Ex: If your sensor consistently reports a temp that's 5 degrees too warm, you'd enter \"-5\". If 3 degrees too cold, enter \"+3\".", displayDuringSetup: false, type: "paragraph", element: "paragraph", title: ""
 		input "tempOffset", "number", title: "Temperature Offset", description: "Adjust temperature by this many degrees", range: "*..*", displayDuringSetup: false
         input "interval", "number", title: "Measurement Interval 1-120 minutes (default: 10 minutes)", description: "Set how often you would like to check soil moisture in minutes", range: "1..120", defaultValue: 10, displayDuringSetup: false
         input "resetMinMax", "bool", title: "Reset Humidity min and max", required: false, displayDuringSetup: false
@@ -356,6 +356,10 @@ def configure() {
     //log.debug "Configuring Reporting and Bindings. min: $minReport max: $maxReport "
 	
     [
+        "zdo bind 0x${device.deviceNetworkId} 1 1 0x402 {${device.zigbeeId}} {}", "delay 500",
+        "zdo bind 0x${device.deviceNetworkId} 1 1 0x405 {${device.zigbeeId}} {}", "delay 500",                
+		"zdo bind 0x${device.deviceNetworkId} 1 1 1 {${device.zigbeeId}} {}", "delay 1000",
+        
         //temperature
         "zcl global send-me-a-report 0x402 0x0000 0x29 1 0 {3200}",
         "send 0x${device.deviceNetworkId} 1 1", "delay 500",
@@ -366,11 +370,7 @@ def configure() {
      
         //min = battery measure interval  1 = 1 hour     
         "zcl global send-me-a-report 1 0x0000 0x21 0x0C 0 {0500}",
-        "send 0x${device.deviceNetworkId} 1 1", "delay 500",
-                
-        "zdo bind 0x${device.deviceNetworkId} 1 1 0x402 {${device.zigbeeId}} {}", "delay 500",
-        "zdo bind 0x${device.deviceNetworkId} 1 1 0x405 {${device.zigbeeId}} {}", "delay 500",                
-		"zdo bind 0x${device.deviceNetworkId} 1 1 1 {${device.zigbeeId}} {}", "delay 1000"
+        "send 0x${device.deviceNetworkId} 1 1", "delay 500"
 	] + refresh()
 }
 
